@@ -1,0 +1,21 @@
+[Unit]
+Description=Space Cloud WOL Controller (Ktor)
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/space-cloud-server
+ExecStart=/usr/bin/java -jar /home/pi/space-cloud-server/space-cloud-server.jar
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=space-cloud-wol
+
+# Garante que o processo possa enviar broadcasts UDP (WOL)
+AmbientCapabilities=CAP_NET_RAW
+
+[Install]
+WantedBy=multi-user.target

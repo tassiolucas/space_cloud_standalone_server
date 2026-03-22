@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Cloud Server - Wake On LAN</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra de navegação superior -->
+        <header class="top-nav">
+            <div class="brand">
+                <i class="fas fa-server"></i>
+                <h1>Space Cloud Server</h1>
+                <span class="version">v2.0.0</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active" data-section="dashboard">Dashboard</a>
+                <a href="#" data-section="logs">Logs</a>
+                <a href="#" data-section="config">Configurações</a>
+            </div>
+            <div class="system-status">
+                <span class="uptime"><i class="fas fa-clock"></i> Uptime: <span id="uptime">--:--:--</span></span>
+            </div>
+        </header>
+
+        <!-- Conteúdo principal -->
+        <main class="main-content">
+            <!-- Painel lateral -->
+            <aside class="side-panel">
+                <div class="server-status">
+                    <div class="status-icon">
+                        <i class="fas fa-power-off" id="server-icon"></i>
+                    </div>
+                    <div class="server-info">
+                        <h3>Status do Servidor</h3>
+                        <p id="status-text">Verificando...</p>
+                    </div>
+                </div>
+
+                <div class="next-wake-panel">
+                    <h3><i class="fas fa-clock"></i> Próximo Acionamento</h3>
+                    <div class="time-display" id="next-wake-time">--:--</div>
+                </div>
+
+                <div class="activation-stats">
+                    <h3><i class="fas fa-chart-bar"></i> Estatísticas</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total de Acionamentos:</span>
+                        <span class="stat-value" id="total-activations">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Bem-sucedidos:</span>
+                        <span class="stat-value" id="successful-activations">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Taxa de Sucesso:</span>
+                        <span class="stat-value" id="success-rate">0%</span>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button id="test-wol" class="action-btn primary-action">
+                        <i class="fas fa-bolt"></i> Acionar Agora
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Área de conteúdo -->
+            <section class="content-area">
+                <!-- Seção Dashboard -->
+                <div class="content-section active" id="dashboard-section">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <i class="fas fa-cog"></i>
+                            <h2>Configurações do Wake On LAN</h2>
+                        </div>
+                        <div class="card-content">
+                            <form id="config-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="ip-address">
+                                            <i class="fas fa-network-wired"></i> Endereço IP do Alvo
+                                        </label>
+                                        <input type="text" id="ip-address" name="ip"
+                                            placeholder="192.168.1.100"
+                                            pattern="^(\d{1,3}\.){3}\d{1,3}$" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="mac-address">
+                                            <i class="fas fa-microchip"></i> Endereço MAC do Alvo
+                                        </label>
+                                        <input type="text" id="mac-address" name="mac"
+                                            placeholder="00:11:22:33:44:55"
+                                            pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>
+                                            <i class="fas fa-clock"></i> Horário para Ativar (formato 24h)
+                                        </label>
+                                        <div class="time-inputs">
+                                            <input type="number" id="hour" name="hour" min="0" max="23" placeholder="00" required>
+                                            <span class="time-separator">:</span>
+                                            <input type="number" id="minute" name="minute" min="0" max="59" placeholder="00" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group toggle-group">
+                                        <label for="enable-schedule">
+                                            <i class="fas fa-calendar-check"></i> Ativar Agendamento
+                                        </label>
+                                        <div class="toggle-container">
+                                            <label class="switch">
+                                                <input type="checkbox" id="enable-schedule" name="enabled">
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span class="toggle-status" id="toggle-status-text">Inativo</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Salvar Configurações
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h2>Informações do Sistema</h2>
+                        </div>
+                        <div class="card-content system-info">
+                            <div class="info-item">
+                                <span class="info-label"><i class="fas fa-server"></i> Servidor:</span>
+                                <span class="info-value">Raspberry Pi (Ktor)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label"><i class="fas fa-network-wired"></i> Rede:</span>
+                                <span class="info-value" id="network-info">Conectado</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label"><i class="fas fa-history"></i> Último Acionamento:</span>
+                                <span class="info-value" id="last-wake">Nenhum</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Logs -->
+                <div class="content-section" id="logs-section">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <i class="fas fa-list"></i>
+                            <h2>Histórico de Acionamentos</h2>
+                            <div class="card-actions">
+                                <button id="clear-logs" class="btn-icon" title="Limpar logs">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button id="refresh-logs" class="btn-icon" title="Atualizar logs">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="log-container">
+                                <table class="log-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Data/Hora</th>
+                                            <th>Endereço IP</th>
+                                            <th>Endereço MAC</th>
+                                            <th>Tentativa</th>
+                                            <th>Status</th>
+                                            <th>Mensagem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="log-entries">
+                                        <tr class="no-logs">
+                                            <td colspan="6">Nenhum log disponível</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Configurações Avançadas -->
+                <div class="content-section" id="config-section">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <i class="fas fa-sliders-h"></i>
+                            <h2>Configurações Avançadas</h2>
+                        </div>
+                        <div class="card-content">
+                            <form id="advanced-config-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="ping-timeout">
+                                            <i class="fas fa-hourglass-half"></i> Tempo limite de verificação (segundos)
+                                        </label>
+                                        <input type="number" id="ping-timeout" name="ping_timeout_seconds" min="10" max="600" placeholder="120">
+                                        <p class="setting-description">Após enviar o pacote WOL, o sistema aguarda este tempo tentando ping para confirmar que o servidor acordou.</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ping-interval">
+                                            <i class="fas fa-sync-alt"></i> Intervalo entre pings (segundos)
+                                        </label>
+                                        <input type="number" id="ping-interval" name="ping_interval_seconds" min="1" max="60" placeholder="5">
+                                        <p class="setting-description">Intervalo de espera entre cada tentativa de ping durante a verificação.</p>
+                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="max-log-entries">
+                                            <i class="fas fa-database"></i> Máximo de entradas no log
+                                        </label>
+                                        <input type="number" id="max-log-entries" name="max_log_entries" min="10" max="500" placeholder="50">
+                                        <p class="setting-description">Número máximo de registros mantidos no histórico. Entradas mais antigas são removidas automaticamente.</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label><i class="fas fa-broadcast-tower"></i> Destinos do magic packet</label>
+                                        <div class="setting-value-inline">IP direto &bull; Broadcast geral &bull; Broadcast sub-rede</div>
+                                        <p class="setting-description">O pacote é enviado simultaneamente para as portas 7, 9 e 7812 em cada destino para maximizar a chance de sucesso.</p>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Salvar Configurações Avançadas
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="info-divider"></div>
+
+                            <div class="runtime-info">
+                                <h3><i class="fas fa-info-circle"></i> Informações do Runtime</h3>
+                                <div class="info-item">
+                                    <span class="info-label"><i class="fas fa-server"></i> Servidor:</span>
+                                    <span class="info-value">Ktor 2.3.8 + Netty</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label"><i class="fas fa-code"></i> Linguagem:</span>
+                                    <span class="info-value">Kotlin 1.9 / JVM 11</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label"><i class="fas fa-database"></i> Banco de dados:</span>
+                                    <span class="info-value">SQLite via Exposed (WAL mode) &mdash; <code>data/space_cloud.db</code></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label"><i class="fas fa-clock"></i> Agendador:</span>
+                                    <span class="info-value">Kotlin Coroutines (sem dependências externas)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="notification" class="notification">
+            <div class="notification-content">
+                <i class="notification-icon"></i>
+                <span id="notification-message">Mensagem de notificação</span>
+            </div>
+            <button id="close-notification">&times;</button>
+        </div>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
