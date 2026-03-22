@@ -3,9 +3,9 @@
 # Uso: ./deploy.sh <ip-do-raspberry>
 # Exemplo: ./deploy.sh 192.168.1.50
 
-RASPBERRY_IP=${1:-"192.168.1.50"}
-RASPBERRY_USER="pi"
-DEPLOY_DIR="/home/pi/space-cloud-server"
+RASPBERRY_IP=${1:-"192.168.0.101"}
+RASPBERRY_USER="tassiolucas"
+DEPLOY_DIR="/home/tassiolucas/space-cloud-server"
 JAR_NAME="space-cloud-server.jar"
 
 echo "==> Build do fat JAR..."

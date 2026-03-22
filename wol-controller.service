@@ -5,9 +5,9 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/space-cloud-server
-ExecStart=/usr/bin/java -jar /home/pi/space-cloud-server/space-cloud-server.jar
+User=tassiolucas
+WorkingDirectory=/home/tassiolucas/space-cloud-server
+ExecStart=/usr/bin/java -jar /home/tassiolucas/space-cloud-server/space-cloud-server.jar
 Restart=always
 RestartSec=10
 StandardOutput=journal
